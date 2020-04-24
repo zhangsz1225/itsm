@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>事件管理</title>
+    <link rel="stylesheet" href="/common/css/platform.css" />
+    <link rel="stylesheet" href="/common/css/bootstrap-table.css">
+    <link rel="stylesheet" href="/assets/plugins/font-awesome/css/font-awesome.min.css">
+    <style type="text/css">
+        .kv-item input[type=text]{
+            width: 80px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="saper-container">
+    <div id="saper-hd"></div>
+    <div id="saper-bd">
+        <div class="subfiled clearfix">
+            <h2>事件管理</h2>
+        </div>
+        <div class="subfiled-content">
+            <div class="search-box clearfix">
+                <div class="kv-item clearfix">
+                    <label>水利站：</label>
+                    <div class="kv-item-content">
+                        <select id="org_id" name="org_id" class="iselect" style="width: 150px;">
+                        </select>
+                    </div>
+                </div>
+                <div class="kv-item clearfix">
+                    <label>测站：</label>
+                    <div class="kv-item-content">
+                        <select id="stcd" name="stcd" class="iselect" style="width: 150px">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="kv-item clearfix">
+                    <label>标题：</label>
+                    <div class="kv-item-content">
+                        <input type="title" id="title">
+                    </div>
+                </div>
+                <div class="kv-item clearfix">
+                    <label>事件状态：</label>
+                    <div class="kv-item-content">
+                        <select id="status" name="status" class="iselect" style="width: 100px">
+                            <option value="">全部</option>
+                            <option value="0">新建</option>
+                            <option value="1">已解决</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="kv-item clearfix">
+                    <label>计划描述：</label>
+                    <div class="kv-item-content">
+                        <input type="memo" id="memo">
+                    </div>
+                </div>
+                <a href="javascript:search();" class="sapar-btn sapar-btn-recom query-btn">查询</a>
+            </div>
+
+            <!--表格开始-->
+            <div class="table">
+                <!--表格操作-->
+                <div class="table-operate ue-clear">
+                    <a href="javascript:;" class="add" >添加</a>
+                </div>
+                <!--表格具体内容-->
+                <div class="table-box">
+                    <table id="incidentTable">
+                    </table>
+                </div>
+            </div><!--表格结束-->
+        </div>
+    </div>
+    <div id="saper-ft"></div>
+</div>
+
+</body>
+<script type="text/javascript" src="/assets/plugins/jquery/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="/common/js/platform.js"></script>
+<script type="text/javascript" src="/common/js/bootstrap-table.js"></script>
+<script type="text/javascript" src="/common/js/bootstrap-table-locale-all.min.js"></script>
+<script type="text/javascript" src="/assets/plugins/layer/layer/layer.js"></script>
+<script type="text/javascript">
+    $(function() {
+        initTable();
+
+        $('.add').click(function(){
+            add();
+        });
+        $.ajax({
+            url: "/incident/getInsts",
+            type: "post",
+            success: function (ret) {
+                if (ret.state == 'ok') {
+                    $("#org_id").append("<option value=''>全部</option>");
+                    for (var i = 0; i < ret.rows.length; i++) {
+                        $("#org_id").append("<option value='" + ret.rows[i].rowguid + "'>" + ret.rows[i].instnm + "</option>")
+                    }
+                }
+            }
+        })
+
+        $('#org_id').change(function () {
+            //selected的值
+            var org_id = $("#org_id ").val();
+            if (org_id != '') {
+                $.ajax({
+                    url: "/incident/getStations",
+                    type: "post",
+                    data: {instgd: org_id},
+                    success: function (ret) {
+                        if (ret.state == 'ok') {
+                            $("#stcd").empty();
+                            $("#stcd").append("<option>全部</option>");
+                            for (var i = 0; i < ret.rows.length; i++) {
+                                $("#stcd").append("<option value='" + ret.rows[i].rowguid + "'>" + ret.rows[i].stnm + "</option>")
+                            }
+                        }
+                    }
+                })
+            } else {
+                $("#stcd").append("<option value=''>请先选水利站</option>");
+            }
+        });
+    });
+
+    function initTable() {
+        $("#incidentTable").bootstrapTable({
+            idField: "id",
+            method: 'get',
+            pagination: false,
+            singleSelect: true,
+            striped: true,
+            clickToSelect: true,
+            queryParamsType: "",
+            queryParams: paginationParam,
+            url: "/incident/getIncidents",
+            columns: [
+                /*{checkbox: true, width: 40},*/
+                { title: "序号", width: 40, formatter: function(value, row, index) { return index + 1; }},
+                { title: "水利站", field: "instnm", align: "center", width: 120 },
+                { title: "测站", field: "stnm", width: 100 },
+                { title: "标题", field: "title", width: 120 , formatter: function(value, row, index) {
+                        return "<a href='#' onclick=edit('"+row.rowguid+ "','"+row.instnm+ "','"+row.stnm+"') class='fa fa-edit'>"+value+"</a>&emsp;";
+                    }},
+                { title: "紧急程度", field: "urgency", width: 60, formatter: function(value, row, index) {
+                        if (value == '非常高') {
+                            return "<span style='background-color: yellow;'>"+value+"</span>";
+                        } else{
+                            return "<span style='color: green;'>"+value+"</span>";
+                        }
+                    }},
+                { title: "发起人", field: "createName", width: 60 },
+                { title: "创建时间", field: "createTime", width: 60},
+                { title: "事件状态", field: "status", width: 60 , formatter: function(value, row, index) {
+                        if(row.status == 0){
+                            return "新建";
+                        }else if(row.status == 1){
+                            return "<span style='color: green;'>已解决</span>";
+                        }
+                    }},
+                { title: "运维人员", field: "username", width: 60 },
+                { title: "附件名称", field: "attachmentNames", width: 60,style:'table-layout: fixed'},
+                { title: "附件下载",align: "left", width: 50, formatter: function(value, row, index) {
+                        var ret = "<a href='#' onclick=downLoad(\""+row["attachmentIds"]+ "\") class='fa fa-edit'>下载</a>&emsp;";
+                        if(row.attachmentIds != null){
+                            return ret;
+                        }else{
+                            return "没有附件.";
+                        }
+                    }},
+                { title: "关联计划", width: 80, formatter: function(value, row) {
+                       return "<a href='#' onclick=viewPlan('" + row["planId"] + "') class='fa fa-wechat'>查看计划</a>"
+                    } }
+            ],
+        })
+    }
+    function add() {
+        window.location.href="/incident/add?time=" + Date.now();
+    }
+    function edit(id,instnm,stnm) {
+        window.location.href="/incident/edit?id=" + id + "&instnm="+instnm+"&stnm="+stnm+"&time=" + Date.now();
+    }
+    function viewPlan(id) {
+        window.location.href="/incident/viewPlan?id=" + id + "&instnm="+instnm+"&stnm="+stnm+"&time=" + Date.now();
+    }
+    function downLoad(id) {
+        window.location.href="/incident/downFile?attachmentIds=" + id + "&time=" + Date.now();
+    }
+    function search() {
+        $("#incidentTable").bootstrapTable("refresh");
+    }
+    function paginationParam(params) {
+        var temp = {};
+        if($("#title").val() != ''){
+            temp.title = $("#title").val();
+        }
+        if($("#memo").val() != ''){
+            temp.memo = $("#memo").val();
+        }
+        if($("#status").val() != ''){
+            temp.status = $("#status").val();
+        }
+        if($("#org_id").val() != null){
+            temp.orgId = $("#org_id").val();
+        }
+        if($("#stcd").val() != null && $("#stcd").val() != '全部'){
+            temp.stcd = $("#stcd").val();
+        }
+        console.log(temp);
+        return temp;
+    }
+</script>
+</html>

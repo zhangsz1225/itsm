@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <link rel="stylesheet" href="common/css/login.css"/>
+    <title>泰克运维管理系统</title>
+</head>
+<body style="padding: 10px">
+<form id="login_form" action="/login/doLogin?returnUrl=#(returnUrl)" method="post">
+    <div id="login">
+        <div id="login-logo">
+        </div>
+        <div id="login-panel">
+            <div class="panel-h">
+                <div style="height: 20px;"></div>
+                <span style="font-size: 24pt; font-weight: bold">运维后台管理系统</span>
+            </div>
+            <div class="panel-c">
+                <div style="margin-top:60px;">
+                    <table cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                        <tr>
+                            <td align="center" colspan="2">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center" colspan="2">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right" width="33%">
+                                账号：
+                            </td>
+                            <td align="left" width="67%">
+                                <input name="username" type="text" id="username" class="login-text" />
+                                <span id="usernameMsg"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right">
+                                密码：
+                            </td>
+                            <td align="left">
+                                <input name="password" type="password" id="password" class="login-text" />
+                                <span id="passwordMsg"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right">
+                                <img title="点击刷新" class="captcha" src="/login/captcha" onclick="updateCaptcha();">
+                            </td>
+                            <td align="left">
+                                <input type="text" name="captcha" class="login-text" id="captchaInput">
+                                <span id="captchaMsg"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center" colspan="2">
+                                <input type="submit" value="登录" id="btnOK" class="login-btn" />
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel-f">
+            </div>
+        </div>
+        <div id="login-copyright">
+            <span>江苏新泰克软件有限公司</span>
+        </div>
+    </div>
+</form>
+</body>
+
+<script type="text/javascript" src="/assets/plugins/jquery/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="/assets/plugins/jquery_form/jquery.form.min.js"></script>
+<script type="text/javascript" src="/assets/plugins/layer/layer/layer.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        if (window != top) {
+            top.location.href = location.href;
+        }
+
+        $("#login_form").ajaxForm({
+            dataType: "json"
+            , beforeSubmit: function(formData, jqForm, options) {       // 表单提交之前回调
+                $(".panel-c td span").text("");                                    // 清空所有验证 msg
+            }
+            , success: function(ret) {
+                // 业务层验证成功
+                if(ret.state == "ok") {
+                    location.href = ret.returnUrl;
+                    return ;
+                }
+
+                // 业务层验证失败
+                if (ret.state == "fail") {
+                    layer.msg(ret.msg, {
+                            shift: 6
+                            , shade: 0.3
+                            , time: 2500
+                            , offset: "165px"
+                            , closeBtn: 1
+                            , shadeClose: true
+                        } , function() {
+                            updateCaptcha();
+                        }
+                    );
+                    return ;
+                }
+
+                // Validator 层验证失败
+                if (ret.usernameMsg) {
+                    $("#usernameMsg").text(ret.usernameMsg);
+                }
+                if (ret.passwordMsg) {
+                    $("#passwordMsg").text(ret.passwordMsg);
+                }
+                if (ret.captchaMsg) {
+                    updateCaptcha();    // captcha 被验证过以后会立即失效，更新之
+                    $("#captchaMsg").text(ret.captchaMsg);
+                }
+            }
+            , error: function(ret) { }              // ret.status != 200 时回调
+            , complete: function(ret) { }       // 无论是 success 还是 error，最终都会被回调
+        });
+    });
+
+    function updateCaptcha() {
+        $(".captcha").attr("src", "/login/captcha?v=" + Math.random());
+        $("#captchaInput").val("");
+    }
+</script>
+
+</html>

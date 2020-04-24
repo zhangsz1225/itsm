@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="/common/css/platform.css" />
+    <link rel="stylesheet" href="/common/css/index.css" />
+    <title>后台管理系统</title>
+</head>
+
+<body>
+<div id="container">
+    <div id="hd">
+        <div class="hd-wrap clearfix">
+            <div class="top-light"></div>
+            <h1 class="logo"></h1>
+            <ul class="main-nav clearfix">
+                #for (m : menus)
+                <li #if (for.first) class="current" #end data-src="#(m.url)"><a href="javascript:;">#(m.name)</a></li>
+                #end
+            </ul>
+            <div class="notice clearfix">
+                <ul class="clearfix">
+                    <li class="current"><a href="javascript:;">关于客票行程单打印通知</a></li>
+                    <li><a href="javascript:;">关于网银付款升级通知</a></li>
+                    <li><a href="javascript:;">关于客票行程单打印通知</a></li>
+                </ul>
+                <div class="notice-btn">
+                    <a href="javascript:;" class="prev"></a>
+                    <a href="javascript:;" class="next"></a>
+                </div>
+            </div>
+            <div class="toolbar">
+                <div class="login-info clearfix">
+                    <div class="welcome clearfix"><span>欢迎您,</span><a href="javascript:;" class="user-name">Admin</a></div>
+                    <div class="login-msg clearfix">
+                        <a href="javascript:;" class="msg-txt">消息</a>
+                        <a href="javascript:;" class="msg-num">10</a>
+                    </div>
+                </div>
+                <div class="tool clearfix">
+                    <a class="tips" href="javascript:;">合作须知</a>
+                    <a class="tips" href="javascript:;">购票协议</a>
+                    <a href="javascript:;" class="help-btn">帮助</a>
+                    <a href="javascript:;" class="quit-btn exit">退出</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="bd">
+        <div class="wrap clearfix">
+            <iframe src="#(iframe??)" id="iframe" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+    </div>
+    <div id="ft" class="clearfix">
+        <div class="ft-left">
+            <span>通用快速开发系统</span>
+            <em>Office&nbsp;System</em> 技术支持：<a href="http://www.taikesoft.com/" target="_blank">江苏新泰克软件有限公司</a>
+        </div>
+        <div class="ft-right">
+            <span>版本</span>
+            <em>1.0&nbsp;2019</em>
+        </div>
+    </div>
+</div>
+<div class="exitDialog">
+    <div class="dialog-content">
+        <div class="ui-dialog-icon"></div>
+        <div class="ui-dialog-text">
+            <p class="dialog-content">你确定要退出系统？</p>
+            <p class="tips">如果是请点击“确定”，否则点“取消”</p>
+
+            <div class="buttons">
+                <input type="button" class="button long2 ok" value="确定" />
+                <input type="button" class="button long2 normal" value="取消" />
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/assets/plugins/jquery/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="/common/js/platform.js"></script>
+<script type="text/javascript" src="/common/js/index.js"></script>
+</html>

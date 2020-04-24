@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>用户管理</title>
+    <link rel="stylesheet" href="/common/css/platform.css" />
+    <link rel="stylesheet" href="/assets/plugins/font-awesome/css/font-awesome.min.css">
+</head>
+<body>
+<div id="saper-container">
+    <div id="saper-hd"></div>
+    <div id="saper-bd">
+        <div class="subfiled clearfix">
+            <h2>员工修改</h2>
+        </div>
+    </div>
+    <div class="subfiled-content">
+        <form class="saper-form" name="form1" id="form1" action="/user/save" method="post">
+            <input type="hidden" id="id" name="sysAccount.id" value="#(sysAccount.id ??)">
+            <div class="kv-item clearfix">
+                <label><span class="impInfo">*</span>账号：</label>
+                <div class="kv-item-content">
+                    <input type="text" id="username" name="sysAccount.username" value="#(sysAccount.username ??)" readonly="readonly">
+                </div>
+                <div class="kv-item-tip error" id="username_msg"></div>
+            </div>
+            <div class="kv-item clearfix">
+                <label><span class="impInfo">*</span>姓名：</label>
+                <div class="kv-item-content">
+                    <input type="text" id="name" name="sysAccount.name" value="#(sysAccount.name ??)">
+                </div>
+                <div class="kv-item-tip error" id="name_msg"></div>
+            </div>
+            <div class="kv-item clearfix">
+                <label>性别：</label>
+                <div class="kv-item-content">
+                    <span class="choose">
+                        <input type="radio" name="sysAccount.gender" value="男" checked="#(sysAccount.gender =='男'? 'checked':'')" >男
+                    </span>
+                    <span class="choose">
+                        <input type="radio" name="sysAccount.gender" value="女" checked="#(sysAccount.gender =='女'? 'checked':'') ">女
+                    </span>
+                </div>
+            </div>
+            <div class="kv-item clearfix">
+                <label>手机号码：</label>
+                <div class="kv-item-content">
+                    <input type="text" id="phone" name="sysAccount.phone" value="#(sysAccount.phone ??)">
+                </div>
+            </div>
+            <div class="kv-item clearfix">
+                <label>邮箱：</label>
+                <div class="kv-item-content">
+                    <input type="text" id="email" name="sysAccount.email" value="#(sysAccount.email ??)">
+                </div>
+            </div>
+            <div class="kv-item clearfix">
+                <label>备注：</label>
+                <div class="kv-item-content">
+                    <textarea  rows="3" id="description" name="sysAccount.description">#(sysAccount.description ??)</textarea>
+                </div>
+            </div>
+            <div class="kv-item clearfix">
+                <label>排序号：</label>
+                <div class="kv-item-content">
+                    <input type="text" id="sort_number" name="sysAccount.sort_number" value="#(sysAccount.sort_number ??)">
+                </div>
+                <div class="kv-item-tip error" id="sort_number_msg"></div>
+            </div>
+            <div class="buttons">
+                <button type="submit" class="sapar-btn sapar-btn-recom">
+                    <i class="fa fa-save">&nbsp;提交</i>
+                </button>
+                <button type="button" class="sapar-btn" onclick="javascript:history.go(-1)">
+                    <i class="fa fa-reply">&nbsp;取消</i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/assets/plugins/jquery/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="/assets/plugins/jquery_form/jquery.form.min.js"></script>
+<script type="text/javascript" src="/assets/plugins/layer/layer/layer.js"></script>
+<script type="text/javascript">
+    $(function() {
+        $("#form1").ajaxForm({
+            dataType: "json",
+            beforeSubmit: function (formData, jqForm, options) {
+                console.log(formData);
+                $("#username_msg,name_msg,sort_number_msg").text("");
+            },
+            success: function (ret) {
+                if (ret.state == "ok") {
+                    window.location.href="/user/index?time="+Date.now();
+                }
+                if (ret.state == "fail") {
+
+                }
+                if (ret.username_msg) {
+                    $("#username_msg").text(ret.username_msg);
+                }
+                if (ret.name_msg) {
+                    $("#name_msg").text(ret.name_msg);
+                }
+                if (ret.sort_number_msg) {
+                    $("#sort_number_msg").text(ret.sort_number_msg);
+                }
+            }
+            , error: function (ret) {
+
+            }
+            , complete: function (ret) {
+            } 	      // 无论是 success 还是 error，最终都会被回调
+        });
+    });
+</script>
+</html>

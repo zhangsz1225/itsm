@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>事件管理</title>
+    <link rel="stylesheet" href="/common/css/platform.css"/>
+    <link rel="stylesheet" href="/common/css/bootstrap-table.css">
+    <link rel="stylesheet" href="/assets/plugins/font-awesome/css/font-awesome.min.css">
+    <style type="text/css">
+        .kv-item input[type=text]{
+            width: 80px;
+        }
+    </style>
+</head>
+<body>
+<div id="saper-container">
+    <div id="saper-hd"></div>
+    <div id="saper-bd">
+        <div class="subfiled clearfix">
+            <h2>编辑事件</h2>
+        </div>
+    </div>
+    <div class="subfiled-content">
+        <form class="saper-form" name="formIncident" id="formIncident" action="/incident/editSave" method="post">
+            <input type="hidden" id="rowguid" name="opIncident.rowguid" value="#(incident.rowguid)">
+            <input type="hidden" id="planId" name="opIncident.planId" value="#(incident.planId)">
+            <input type="hidden" id="orgid" name="opIncident.orgid" value="#(incident.orgid)">
+            <input type="hidden" id="stcd" name="opIncident.stcd" value="#(incident.stcd)">
+            <input type="hidden" id="createPlan" name="createPlan" value="#(createPlan)">
+            <div class="kv-item clearfix">
+                <label><span class="impInfo">*</span>水利站：</label>
+                <div class="kv-item-content">
+                    <input type="text" id="instnm" name="instnm" value="#(instnm)" style="width: 150px;" readonly="readonly">
+                </div>
+            </div>
+            <div class="kv-item clearfix">
+                <label><span class="impInfo">*</span>测站：</label>
+                <div class="kv-item-content">
+                    <input type="text" id="stnm" name="stnm" value="#(stnm)" style="width: 150px;" readonly="readonly">
+                </div>
+            </div>
+            <div class="kv-item clearfix">
+                <label><span class="impInfo">*</span>事件标题：</label>
+                <div class="kv-item-content">
+                    <input type="text" id="title" name="opIncident.title" value="#(incident.title)" style="width: 150px;">
+                </div>
+                <div class="kv-item-tip error" id="title_msg"></div>
+            </div>
+            <div class="kv-item clearfix">
+                <label>紧急程度：</label>
+                <div class="kv-item-content">
+                    <select type="text" id="urgency" name="opIncident.urgency" class="iselect" style="width: 150px">
+                        #for (urgency : urgencyTypes)
+                            #if(urgency == incident.urgency)
+                            <option selected>#(urgency)</option>
+                            #else
+                            <option>#(urgency)</option>
+                            #end
+                        #end
+                    </select>
+                </div>
+            </div>
+            <div class="kv-item clearfix">
+                <label><span class="impInfo">*</span>事件来源：</label>
+                <div class="kv-item-content">
+                    <input type="text" id="origin" name="opIncident.origin" value="#(incident.origin)" style="width: 150px;">
+                </div>
+            </div>
+            <div class="kv-item clearfix">
+                <label>事件状态：</label>
+                <div class="kv-item-content">
+                    <select type="text" id="status" name="opIncident.status" class="iselect" style="width: 150px">
+                        #if(incident.status == 0){
+                            <option value="0" selected>新建</option>
+                            <option value="1">已解决</option>
+                        }
+                        #else if(incident.status == 1){
+                            <option value="0">新建</option>
+                            <option value="1" selected>已解决</option>
+                        }
+                        #end
+                    </select>
+                </div>
+            </div>
+            <div class="kv-item clearfix" id="endDateDiv">
+                <label><span class="impInfo">*</span>解决截止日期：</label>
+                <div class="kv-item-content" style="line-height: 30px;width: 150px;">
+                    <input type="text" id="endDate"
+                           name="opIncident.endDate" value="#(incident.endDate)"
+                           onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'%y-%M-#{%d}'})">
+                </div>
+                <div class="kv-item-tip error" id="endDate_msg"></div>
+            </div>
+            <div class="kv-item clearfix">
+                <label>解决方案描述：</label>
+                <div class="kv-item-content">
+                    <div class="kv-item-content">
+                        <textarea rows="3" type="text" id="solution" name="opIncident.solution"></textarea>
+                    </div>
+                    <div class="kv-item-tip error" id="solution_msg"></div>
+                </div>
+            </div>
+            #if(flag)
+            <div class="kv-item clearfix" id="planTypeDiv" style="display: none">
+                <label>计划类型：</label>
+                <div class="kv-item-content">
+                    <div class="kv-item-content">
+                        <input type="text" value="#(plan.plan_type ??)" readonly="readonly">
+                    </div>
+                </div>
+            </div>
+            <div class="kv-item clearfix" id="planDateDiv" style="display: none">
+                <label>计划日期*</span>：
+                </label>
+                <div class="kv-item-content">
+                    <input type="text" value="#(plan.plan_date ??)" readonly="readonly">
+                </div>
+            </div>
+            <div class="kv-item clearfix" id="userNameDiv" style="display: none">
+                <label>运维人员：</label>
+                <div class="kv-item-content">
+                    <input type="text" value="#(plan.username ??)" readonly="readonly">
+                </div>
+            </div>
+            <div class="kv-item clearfix" id="executeDiv" style="display: none">
+                <label>执行状态：</label>
+                <div class="kv-item-content">
+                    <div class="kv-item-content">
+                        <input type="text" id="execute_name" readonly="readonly">
+                    </div>
+                </div>
+            </div>
+
+            <div class="kv-item clearfix" id="executeDateDiv" style="display: none">
+                <label>执行日期：</label>
+                <div class="kv-item-content">
+                    <input type="text" name="plan.execute_date" value="#(plan.execute_date ??)" readonly="readonly">
+                </div>
+            </div>
+            <div class="kv-item clearfix" id="memoDiv" style="display: none">
+                <label>计划描述：</label>
+
+                <div class="kv-item-content">
+                    <textarea rows="3" id="memo"></textarea>
+                </div>
+            </div>
+            #end
+            <div class="buttons">
+                <button type="submit" class="sapar-btn sapar-btn-recom">
+                    <i class="fa fa-save">&nbsp;提交</i>
+                </button>
+                <button type="button" class="sapar-btn" onclick="javascript:history.go(-1)">
+                    <i class="fa fa-reply">&nbsp;取消</i>
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/assets/plugins/jquery/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="/assets/plugins/jquery_form/jquery.form.min.js"></script>
+<script type="text/javascript" src="/common/js/platform.js"></script>
+<script type="text/javascript" src="/common/js/bootstrap-table.js"></script>
+<script type="text/javascript" src="/common/js/bootstrap-table-locale-all.min.js"></script>
+<script type="text/javascript" src="/assets/plugins/layer/layer/layer.js"></script>
+<script type="text/javascript" src="/common/js/WdatePicker.js"></script>
+<script type="text/javascript">
+    $(function () {
+        //textarea单独赋值
+        $('#solution').val('#(incident.solution)');
+        var planId = '#(incident.planId ??)';
+        if(planId != "" && planId.length > 1){
+            $('#planTypeDiv').show();
+            $('#planDateDiv').show();
+            $('#userNameDiv').show();
+            $('#executeDiv').show();
+            $('#executeDateDiv').show();
+            $('#memoDiv').show();
+            $('#memo').val('#(plan.memo ??)');
+            var plan_execute = '#(plan.executed ??)';
+            if (plan_execute == '0') {
+                $('#execute_name').val("未执行");
+            } else if (plan_execute == '1') {
+                $('#execute_name').val("已执行");
+            } else if (plan_execute == '2') {
+                $('#execute_name').val("已取消");
+            }
+        }else{
+            $('#planTypeDiv').hide();
+            $('#planDateDiv').hide();
+            $('#userNameDiv').hide();
+            $('#executeDiv').hide();
+            $('#executeDateDiv').hide();
+            $('#memoDiv').hide();
+        }
+        $("#formIncident").ajaxForm({
+            dataType: "json",
+            beforeSubmit: function (formData, jqForm, options) {
+                $("#title_msg,solution_msg").val("");
+            },
+            success: function (ret) {
+                if (ret.state == "ok") {
+                    window.location.href = "/incident/index?time=" + Date.now();
+                }
+                if (ret.state == "fail") {
+
+                }
+                if (ret.title_msg) {
+                    $("#title_msg").text(ret.title_msg);
+                }
+                if (ret.solution_msg) {
+                    $("#solution_msg").text(ret.solution_msg);
+                }
+            }
+            , error: function (ret) {
+
+            }
+            , complete: function (ret) {
+            }
+        });
+    });
+    Date.prototype.format = function (format) {
+        var args = {
+            "M+": this.getMonth() + 1,
+            "d+": this.getDate(),
+            "h+": this.getHours(),
+            "m+": this.getMinutes(),
+            "s+": this.getSeconds(),
+            "q+": Math.floor((this.getMonth() + 3) / 3), //quarter
+
+            "S": this.getMilliseconds()
+        };
+        if (/(y+)/.test(format)) format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var i in args) {
+            var n = args[i];
+            if (new RegExp("(" + i + ")").test(format)) format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? n : ("00" + n).substr(("" + n).length));
+        }
+        return format;
+    };
+</script>
+</html>

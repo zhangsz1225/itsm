@@ -1,0 +1,68 @@
+<link href="#(ctx)/common/css/paginate.css" rel="stylesheet" />
+
+<div class="pagelist">
+    <div class="l-btns">
+        <span>显示</span>
+        <input type="text" value="#(pageSize)" onchange="rePage();" onkeydown="checkNumber(event);" class="pagesize">
+        <span>条/页</span>
+    </div>
+
+    <div class="default">
+        #if (totalPage > 1)
+            #if (pageNumber==1)
+                <span class="disabled">首页</span>
+                <span class="disabled">上一页</span>
+            #else
+                <a href="#(ctx)/#(controller)/list?pn=1&ps=#(pageSize)">首页</a>
+                <a href="#(ctx)/#(controller)/list?pn=#(pageNumber>1?pageNumber-1:1)&ps=#(pageSize)#(searchParams)">上一页</a>
+            #end
+
+            #if(totalPage <= 6)
+                #set(begin = 1,end = totalPage)
+            #else
+                #set(begin = pageNumber-1,end = pageNumber+3)
+                #if(begin -1 <= 0)
+                    #set(begin = 1,end = 6)
+                #end
+                #if(end > totalPage)
+                    #set(begin = totalPage-5,end = totalPage)
+                #end
+            #end
+
+            #for (i = begin; i < end+1; i++)
+                #if(pageNumber==i)
+                <span class="current">#(i)</span>
+                #else
+                <a href="#(ctx)/#(controller)/list?pn=#(i)&ps=#(pageSize)#(searchParams)">#(i)</a>
+                #end
+            #end
+
+            #if(pageNumber==totalPage || totalRow==0)
+                <span class="disabled">下一页</span>
+                <span class="disabled">尾页</span>
+            #else
+                <a href="#(ctx)/#(controller)/list?pn=#(pageNumber < totalPage ? pageNumber + 1:totalPage)&ps=#(pageSize)#(searchParams)">下一页</a>
+                <a href="#(ctx)/#(controller)/list?pn=#(totalPage)&ps=#(pageSize)#(searchParams)">尾页</a>
+            #end
+        #end
+    </div>
+</div>
+
+<script type="text/javascript" src="#(ctx)/assets/plugins/jquery/jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+    //只允许输入数字
+    function checkNumber(e) {
+        if (isFirefox = navigator.userAgent.indexOf("Firefox") > 0) {  //FF
+            if (!((e.which >= 48 && e.which <= 57) || (e.which >= 96 && e.which <= 105) || (e.which == 8) || (e.which == 46)))
+                return false;
+        } else {
+            if (!((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 96 && event.keyCode <= 105) || (event.keyCode == 8) || (event.keyCode == 46)))
+                event.returnValue = false;
+        }
+    }
+
+    function rePage() {
+        var pageSize = $(".pagesize").val();
+        window.location.href = "#(ctx)/#(controller)/list?pn=1&ps=" + pageSize + "#(searchParams)";
+    }
+</script>

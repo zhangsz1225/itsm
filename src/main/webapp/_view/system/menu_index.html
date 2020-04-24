@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>菜单管理</title>
+    <link rel="stylesheet" href="/common/css/platform.css" />
+    <link rel="stylesheet" href="/common/css/left.css" />
+    <link rel="stylesheet" href="/common/css/bootstrap-table.css">
+    <link rel="stylesheet" href="/assets/plugins/font-awesome/css/font-awesome.min.css">
+</head>
+
+<body>
+<div id="saper-container">
+    <div id="saper-hd"></div>
+    <div id="saper-bd">
+        <div class="subfiled clearfix">
+            <h2>菜单管理</h2>
+        </div>
+        <div class="subfiled-content">
+            <span style="color: red; font-size: large">非开发人员请勿修改以下内容</span>
+
+            <!--表格开始-->
+            <div class="table">
+                <!--表格具体内容-->
+                <div class="table-box">
+                    <table id="menuTable">
+                    </table>
+                </div>
+            </div><!--表格结束-->
+        </div>
+    </div>
+    <div id="saper-ft"></div>
+</div>
+
+</body>
+
+
+<script type="text/javascript" src="/assets/plugins/jquery/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="/common/js/platform.js"></script>
+<script type="text/javascript" src="/common/js/index.js"></script>
+<script type="text/javascript" src="/common/js/left.js"></script>
+<script type="text/javascript" src="/common/js/bootstrap-table.js"></script>
+<script type="text/javascript" src="/common/js/bootstrap-table-locale-all.min.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $("#menuTable").bootstrapTable({
+            idField: "id",
+            method: 'get',
+            pagination: false,
+            singleSelect: true,
+            clickToSelect: true,
+            url: "/menu/getMenus",
+            columns: [
+                { title: "序号", width: 40, formatter: function(value, row, index) { return index + 1; }},
+                { title: "菜单", field: "name", align: "left", width: 160, formatter: function(value, row, index) {
+                    if (row["level"] == 1) {
+                        return value;
+                    } else if (row["level"] == 2) {
+                        return " &nbsp <span style='color: red;'>|-</span> " + value;
+                    } else if (row["level"] == 3) {
+                        return " &nbsp&nbsp&nbsp&nbsp <span style='color: red;'>|-</span> " + value;
+                    } else {
+                        return value;
+                    }
+                }},
+                { title: "URL", field: "url", width: 160 },
+                { title: "排序号", field: "sort_number", width: 40 },
+                { title: "操作", width: 120, formatter: function(value, row, index) {
+                    return "<a href='#' onclick=add('" + row["id"] + "') class='fa fa-plus'>新增</a>&emsp;" +
+                        "<a href='#' onclick=edit('" + row["id"] + "') class='fa fa-edit'>编辑</a>&emsp;" +
+                        "<a href='#' onclick=del('" + row["id"] + "') class='fa fa-remove'>删除</a>"
+                }}
+            ],
+        });
+    });
+
+    function add(id) {
+
+    }
+
+    function edit(id) {
+
+    }
+
+    function del(id) {
+
+    }
+</script>
+</html>

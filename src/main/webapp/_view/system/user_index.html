@@ -1,0 +1,333 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>用户管理</title>
+    <link rel="stylesheet" href="/common/css/platform.css" />
+    <link rel="stylesheet" href="/common/css/bootstrap-table.css">
+    <link rel="stylesheet" href="/assets/plugins/font-awesome/css/font-awesome.min.css">
+</head>
+<body>
+<div id="saper-container">
+    <div id="saper-hd"></div>
+    <div id="saper-bd">
+        <div class="subfiled clearfix">
+            <h2>员工管理</h2>
+        </div>
+        <div class="subfiled-content">
+            <div class="search-box clearfix">
+                <div class="kv-item clearfix">
+                    <label>姓名：</label>
+                    <div class="kv-item-content">
+                        <input id="name" type="text" placeholder="姓名" style="width:130px;">
+                    </div>
+                </div>
+                <div class="kv-item clearfix">
+                    <label>账号状态：</label>
+                    <div class="kv-item-content">
+                        <select id="status" class="iselect" style="width: 80px;">
+                            <option value="1">正常</option>
+                            <option value="-1">锁定</option>
+                        </select>
+                    </div>
+                </div>
+                <a href="javascript:search();" class="sapar-btn sapar-btn-recom query-btn">查询</a>
+            </div>
+
+            <!--表格开始-->
+            <div class="table">
+                <!--表格操作-->
+                <div class="table-operate ue-clear">
+                    <a href="javascript:;" class="add" >添加</a>
+<!--                    <a href="javascript:;" class="del">删除</a>-->
+                </div>
+                <!--表格具体内容-->
+                <div class="table-box">
+                    <table id="userTable">
+                    </table>
+                </div>
+            </div><!--表格结束-->
+        </div>
+    </div>
+    <div id="saper-ft"></div>
+</div>
+
+<div id="unbindDialog" style="display: none;">
+    <div class="dialog-content">
+        <div class="ui-dialog-icon"></div>
+        <div class="ui-dialog-text">
+            <p class="dialog-content">是否确定要解绑 [<span id="unbindName"></span>] 的微信账号？</p>
+            <p class="tips">如果是请点击“确定”，否则点“取消”</p>
+
+            <div class="buttons">
+                <input type="button" class="button long2 ok" value="确定" />
+                <input type="button" class="button long2 normal" value="取消" />
+            </div>
+        </div>
+    </div>
+</div>
+<div id="unbanDialog" style="display: none;">
+    <div class="dialog-content">
+        <div class="ui-dialog-icon"></div>
+        <div class="ui-dialog-text">
+            <p class="dialog-content">是否确定解锁禁用账号 [<span id="unbanName"></span>] ？</p>
+            <p class="tips">如果是请点击“确定”，否则点“取消”</p>
+
+            <div class="buttons">
+                <input type="button" class="button long2 ok" value="确定" />
+                <input type="button" class="button long2 normal" value="取消" />
+            </div>
+        </div>
+    </div>
+</div>
+<div id="banDialog" style="display: none;">
+    <div class="dialog-content">
+        <div class="ui-dialog-icon"></div>
+        <div class="ui-dialog-text">
+            <p class="dialog-content">是否确定禁用账号 [<span id="banName"></span>]？</p>
+            <p class="tips">如果是请点击“确定”，否则点“取消”</p>
+
+            <div class="buttons">
+                <input type="button" class="button long2 ok" value="确定" />
+                <input type="button" class="button long2 normal" value="取消" />
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/assets/plugins/jquery/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="/common/js/platform.js"></script>
+<script type="text/javascript" src="/common/js/bootstrap-table.js"></script>
+<script type="text/javascript" src="/common/js/bootstrap-table-locale-all.min.js"></script>
+<script type="text/javascript" src="/assets/plugins/layer/layer/layer.js"></script>
+<script type="text/javascript">
+    $(function() {
+        initTable();
+
+        $('.add').click(function(){
+            add();
+        });
+
+        $('#banDialog').Dialog({
+            title:'锁定',
+            autoOpen: false,
+            width:400,
+            height:200
+        });
+        $('#unbanDialog').Dialog({
+            title:'解锁',
+            autoOpen: false,
+            width:400,
+            height:200
+        });
+        $('#unbindDialog').Dialog({
+            title:'解绑',
+            autoOpen: false,
+            width:400,
+            height:200
+        });
+    });
+
+    function initTable() {
+        $("#userTable").bootstrapTable({
+            idField: "id",
+            method: 'get',
+            pagination: false,
+            singleSelect: true,
+            striped: true,
+            clickToSelect: true,
+            queryParamsType: "",
+            queryParams: paginationParam,
+            url: "/user/getUsers",
+            columns: [
+                //{checkbox: true, width: 40},
+                { title: "序号", width: 40, formatter: function(value, row, index) { return index + 1; }},
+                { title: "姓名", field: "name", align: "center", width: 160 },
+                { title: "账号", field: "username", width: 160 },
+                { title: "性别", field: "gender", width: 60 },
+                { title: "电话", field: "phone", width: 160 },
+                { title: "邮箱", field: "email", width: 100 },
+                { title: "备注", field: "description", width: 160 },
+                { title: "微信id", field: "wxid", width: 160 },
+                { title: "排序号", field: "sort_number", width: 40 },
+                { title: "操作",align: "left", width: 180, formatter: function(value, row, index) {
+                        var ret = "<a href='#' onclick=edit(\""+row["id"]+ "\") class='fa fa-edit'>编辑</a>&emsp;";
+                        if (row["status"] == 1) {
+                            ret += "<a href='#' onclick=ban(\""+row["id"]+ "\",\"" + row["username"] + "\") class='fa fa-lock'>锁定</a>&emsp;";
+                        } else if (row["status"] == -1) {
+                            ret += "<a href='#' onclick=unban(\""+row["id"]+ "\",\"" + row["username"] + "\") class='fa fa-unlock'>解锁</a>&emsp;";
+                        }
+                        if (row["wxid"] != null || row["wxid"] != undefined) {
+                            ret += "<a href='#' onclick='unbind(\""+row["id"]+ "\",\"" + row["username"] + "\");' class='fa fa-wechat'>解绑</a>";
+                        }
+                        return ret;
+                    }}
+            ],
+        })
+    }
+
+    function add() {
+        window.location.href="/user/add?time=" + Date.now();
+    }
+
+    function edit(id) {
+        window.location.href="/user/edit?id=" + id + "&time=" + Date.now();
+    }
+
+    function  del() {
+        var selections=$("#userTable").bootstrapTable('getSelections');
+        var ids='';
+        $.each(selections,function(i,item){
+            ids+= item.id+',';
+        });
+
+        if(selections.length==0){
+            layer.msg('请选择要删除的信息!');
+            return false;
+        }
+
+        layer.confirm("是否要删除该信息？", function () {
+            $.post("/user/del?ids="
+                + ids.slice(0,ids.length-1), function (ret) {
+                if (ret.state == "ok") {
+                    layer.msg("删除成功！");
+                    search();
+                } else {
+                    layer.msg(ret.msg);
+                }
+            });
+        })
+    }
+
+    function search() {
+        $("#userTable").bootstrapTable("refresh");
+    }
+
+    function paginationParam(params) {
+        var temp = {
+            name: $("#name").val(),
+            status: $("#status").val()
+        };
+        return temp;
+    }
+
+    function ban(id, username) {
+        $("#banName").html(username);
+        $('#banDialog').Dialog('open');
+
+        // 确定锁定账号
+        $('#banDialog input[type=button]').click(function(e) {
+            $('#banDialog').Dialog('close');
+
+            if($(this).hasClass('ok')) {
+                $.ajax({
+                    url: "/user/ban",
+                    data: { id: id },
+                    success: function (data) {
+                        if (data.state == "ok") {
+                            layer.msg("锁定操作成功!", {
+                                    shade: 0.3
+                                    , time: 2500
+                                    , offset: "165px"
+                                    , closeBtn: 1
+                                    , shadeClose: true
+                                } , function() {
+                                    $("#userTable").bootstrapTable("refresh");
+                                }
+                            );
+                        } else {
+                            layer.msg("锁定操作失败, 原因: " + data.msg, {
+                                shade: 0.3
+                                , time: 2500
+                                , offset: "165px"
+                                , closeBtn: 1
+                                , shadeClose: true
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function unban(id, username) {
+        $("#unbanName").html(username);
+        $('#unbanDialog').Dialog('open');
+
+        // 确定锁定账号
+        $('#unbanDialog input[type=button]').click(function(e) {
+            $('#unbanDialog').Dialog('close');
+
+            if($(this).hasClass('ok')) {
+                $.ajax({
+                    url: "/user/unban",
+                    data: { id: id },
+                    success: function (data) {
+                        if (data.state == "ok") {
+                            layer.msg("解锁操作成功!", {
+                                    shade: 0.3
+                                    , time: 2500
+                                    , offset: "165px"
+                                    , closeBtn: 1
+                                    , shadeClose: true
+                                } , function() {
+                                    $("#userTable").bootstrapTable("refresh");
+                                }
+                            );
+                        } else {
+                            layer.msg("解锁操作失败, 原因: " + data.msg, {
+                                shade: 0.3
+                                , time: 2500
+                                , offset: "165px"
+                                , closeBtn: 1
+                                , shadeClose: true
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function unbind(id, username) {
+        $("#unbindName").html(username);
+        $('#unbindDialog').Dialog('open');
+
+        // 确定解绑
+        $('#unbindDialog input[type=button]').click(function(e) {
+            $('#unbindDialog').Dialog('close');
+
+            if($(this).hasClass('ok')) {
+                $.ajax({
+                    url: "/user/unbind",
+                    data: { id: id },
+                    success: function (data) {
+                        if (data.state == "ok") {
+                            layer.msg("解绑操作成功!", {
+                                    shade: 0.3
+                                    , time: 2500
+                                    , offset: "165px"
+                                    , closeBtn: 1
+                                    , shadeClose: true
+                                } , function() {
+                                    $("#userTable").bootstrapTable("refresh");
+                                }
+                            );
+                        } else {
+                            layer.msg("解绑操作失败, 原因: " + data.msg, {
+                                    shade: 0.3
+                                    , time: 2500
+                                    , offset: "165px"
+                                    , closeBtn: 1
+                                    , shadeClose: true
+                                });
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+
+</script>
+</html>

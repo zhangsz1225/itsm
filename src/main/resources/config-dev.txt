@@ -1,0 +1,15 @@
+#主要配置
+#jdbcUrl=jdbc:mysql://localhost/platform?characterEncoding=utf8&useSSL=false&zeroDateTimeBehavior=convertToNull
+#user=root
+#password=
+#devMode=true
+#engineDevMode=true
+
+jdbcUrl=jdbc:mysql://192.168.0.252/itsm?characterEncoding=utf8&useSSL=false&zeroDateTimeBehavior=convertToNull
+user=root
+password=root
+devMode=true
+engineDevMode=true
+
+#分页大小
+pageSize=10

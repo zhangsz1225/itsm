@@ -1,0 +1,451 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>事件管理</title>
+    <link rel="stylesheet" href="/common/css/platform.css"/>
+    <link rel="stylesheet" href="/common/css/bootstrap-table.css">
+    <link rel="stylesheet" href="/assets/plugins/font-awesome/css/font-awesome.min.css">
+    <style type="text/css">
+        .kv-item input[type=text]{
+            width: 80px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="saper-container">
+    <div id="saper-hd"></div>
+    <div id="saper-bd">
+        <div class="subfiled clearfix">
+            <h2>新建事件</h2>
+        </div>
+    </div>
+    <div class="subfiled-content">
+        <form class="saper-form" name="formIncident" id="formIncident" action="/incident/save" method="post">
+            <input type="hidden" id="assignName" name="assignName">
+            <input type="hidden" id="orgName" name="orgName">
+            <input type="hidden" id="stcdName" name="stcdName">
+            <div class="kv-item clearfix">
+                <label>水利站：</label>
+                <div class="kv-item-content">
+                    <select id="orgid" name="opIncident.orgid" class="iselect" style="width: 150px">
+                    </select>
+                </div>
+                <div class="kv-item-tip error" id="org_msg"></div>
+            </div>
+            <div class="kv-item clearfix">
+                <label>测站：</label>
+                <div class="kv-item-content">
+                    <select id="stcd" name="opIncident.stcd" class="iselect" style="width: 150px">
+                        <option value=''>请先选择水利站</option>
+                    </select>
+                </div>
+                <div class="kv-item-tip error" id="stcd_msg"></div>
+            </div>
+
+            <div class="kv-item clearfix">
+                <label><span class="impInfo">*</span>事件标题：</label>
+                <div class="kv-item-content">
+                    <input type="text" id="title" name="opIncident.title">
+                </div>
+                <div class="kv-item-tip error" id="title_msg"></div>
+            </div>
+            <div class="kv-item clearfix">
+                <label>紧急程度：</label>
+                <div class="kv-item-content">
+                    <select id="urgency" name="opIncident.urgency" class="iselect" style="width: 150px">
+                        #for (urgency : urgencyTypes)
+                        <option>#(urgency)</option>
+                        #end
+                    </select>
+                </div>
+            </div>
+            <div class="kv-item clearfix">
+                <label>事件来源：</label>
+                <div class="kv-item-content">
+                    <select id="origin" name="opIncident.origin" class="iselect" style="width: 150px">
+                        <option value="客户填报">客户填报</option>
+                        <option value="巡检">巡检</option>
+                        <option value="系统自检">系统自检</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+            </div>
+            <div class="kv-item clearfix">
+                <label>事件状态：</label>
+                <div class="kv-item-content">
+                    <select id="status" name="opIncident.status" class="iselect" style="width: 150px">
+                        <option value="0" selected>新建</option>
+                        <option value="1">已解决</option>
+                    </select>
+                </div>
+            </div>
+            <div class="kv-item clearfix">
+                <label><span class="impInfo">*</span>解决截止日期：</label>
+                <div class="kv-item-content" style="line-height: 30px;width: 150px;">
+                    <input type="text" id="endDate"
+                           name="opIncident.endDate"
+                           onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'%y-%M-#{%d}'})">
+                </div>
+                <div class="kv-item-tip error" id="endDate_msg"></div>
+            </div>
+            <div class="kv-item clearfix">
+                <label>解决描述：</label>
+                <div class="kv-item-content">
+                    <div class="kv-item-content">
+                        <input type="text" id="solution" name="opIncident.solution" value="">
+                    </div>
+                    <div class="kv-item-tip error" id="solution_msg"></div>
+                </div>
+            </div>
+            <div class="kv-item clearfix">
+                <label>是否创建计划：</label>
+                <div class="kv-item-content">
+                    <select id="createPlan" name="createPlan" class="iselect" style="width: 150px">
+                        <option value="0" selected>否</option>
+                        <option value="1">是</option>
+                    </select>
+                </div>
+            </div>
+            <div class="kv-item clearfix" id="planTypeDiv" style="display: none">
+                <label>计划类型：</label>
+                <div class="kv-item-content">
+                    <select id="planType" name="planType" class="iselect" style="width: 150px">
+                        #for (planType : planTypes)
+                        <option>#(planType)</option>
+                        #end
+                    </select>
+                </div>
+            </div>
+
+            <div class="kv-item clearfix" id="planDateDiv" style="display: none">
+                <label><span class="impInfo">*</span>计划日期：</label>
+                <div class="kv-item-content" style="line-height: 30px;width: 150px;">
+                    <input type="text" id="planDate"
+                           name="planDate"
+                           onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'%y-%M-#{%d}'})">
+                </div>
+            </div>
+            <div class="kv-item clearfix" id="assignIdDiv" style="display: none">
+                <label><span class="impInfo">*</span>运维人员：</label>
+                <div class="kv-item-content">
+                    <select id="assignId" name="assignId" class="iselect" style="width: 150px">
+                        #for(x : accountMap)
+                        <option value="#(x.key)">#(x.value)</option>
+                        #end
+                    </select>
+                </div>
+            </div>
+            <div class="kv-item clearfix" id="memoDiv" style="display: none">
+                <label><span class="impInfo">*</span>计划描述：</label>
+
+                <div class="kv-item-content">
+                    <textarea rows="3" id="memo" name="memo"></textarea>
+                </div>
+                <div class="kv-item-tip error" id="memo_msg"></div>
+            </div>
+            <div class="tab-content-item">
+                <div class="kv-item clearfix">
+                    <label>附件1上传</a>：</label>
+                    <input type="hidden" id="attachmentId1" name="attachmentId1">
+                    <button type="button" class="btn btn-primary"
+                            onclick="upload('1');">
+                        <i class="fa fa-upload">&nbsp;上传</i>
+                    </button>
+                    <button type="button" class="btn btn-primary"
+                            onclick="deleteFile('1');">
+                        <i class="fa fa-upload">&nbsp;删除</i>
+                    </button>
+                    <div class="kv-item-content">
+                        <input type="text" id="fileName1" name="fileName1" readonly="readonly">
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content-item">
+                <div class="kv-item clearfix">
+                    <label>附件2上传</a>：</label>
+                    <input type="hidden" id="attachmentId2" name="attachmentId2">
+                    <button type="button" class="btn btn-primary"
+                            onclick="upload('2');">
+                        <i class="fa fa-upload">&nbsp;上传</i>
+                    </button>
+                    <button type="button" class="btn btn-primary"
+                            onclick="deleteFile('2');">
+                        <i class="fa fa-upload">&nbsp;删除</i>
+                    </button>
+                    <div class="kv-item-content">
+                        <input type="text" id="fileName2" name="fileName2" readonly="readonly">
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content-item">
+                <div class="kv-item clearfix">
+                    <label>附件3上传</a>：</label>
+                    <input type="hidden" id="attachmentId3" name="attachmentId3">
+                    <button type="button" class="btn btn-primary"
+                            onclick="upload('3');">
+                        <i class="fa fa-upload">&nbsp;上传</i>
+                    </button>
+                    <button type="button" class="btn btn-primary"
+                            onclick="deleteFile('3');">
+                        <i class="fa fa-upload">&nbsp;删除</i>
+                    </button>
+                    <div class="kv-item-content">
+                        <input type="text" id="fileName3" name="fileName3" readonly="readonly">
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content-item">
+                <div class="kv-item clearfix">
+                    <label>附件4上传</a>：</label>
+                    <input type="hidden" id="attachmentId4" name="attachmentId4">
+                    <button type="button" class="btn btn-primary"
+                            onclick="upload('4');">
+                        <i class="fa fa-upload">&nbsp;上传</i>
+                    </button>
+                    <button type="button" class="btn btn-primary"
+                            onclick="deleteFile('4');">
+                        <i class="fa fa-upload">&nbsp;删除</i>
+                    </button>
+                    <div class="kv-item-content">
+                        <input type="text" id="fileName4" name="fileName4" readonly="readonly">
+                    </div>
+                </div>
+            </div>
+            <div class="buttons">
+                <button type="submit" class="sapar-btn sapar-btn-recom">
+                    <i class="fa fa-save">&nbsp;提交</i>
+                </button>
+                <button type="button" class="sapar-btn" onclick="javascript:history.go(-1)">
+                    <i class="fa fa-reply">&nbsp;取消</i>
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+
+<div id="uploadDialog" style="display: none;">
+    <div class="dialog-content">
+        <form name="incidentUpload" id="incidentUpload" action="/incident/incidentUpload" method="post"
+              enctype="multipart/form-data">
+            <input type="hidden" id="uploadIndex" name="uploadIndex">
+            <div class="ui-dialog-text">
+                <p class="dialog-content">
+                <p class="tips"></p>
+                <!--(jpg|jpeg|png|gif|bmp|mp4|avi|3gp|wmv)-->
+                <input id="fileInput" name="fileInput" type="file"
+                       accept="audio/*,video/*,image/*">
+                </p>
+
+                <div class="buttons">
+                    <input type="submit" class="button long2 ok" value="上传"/>
+                    <input type="button" class="button long2 normal" onclick="closeDialog()" value="取消"/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</body>
+<script type="text/javascript" src="/assets/plugins/jquery/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="/assets/plugins/jquery_form/jquery.form.min.js"></script>
+<script type="text/javascript" src="/common/js/platform.js"></script>
+<script type="text/javascript" src="/common/js/bootstrap-table.js"></script>
+<script type="text/javascript" src="/common/js/bootstrap-table-locale-all.min.js"></script>
+<script type="text/javascript" src="/assets/plugins/layer/layer/layer.js"></script>
+<script type="text/javascript" src="/common/js/WdatePicker.js"></script>
+<script type="text/javascript">
+    $(function () {
+        //分配运维人员时进来时就已经选择了一个
+        $("#assignName").val($("#assignId option:selected").text());
+        //计划日期默认选择当前日期
+        $("#planDate").val(new Date().format("yyyy-MM-dd"));
+        $.ajax({
+            url: "/incident/getInsts",
+            type: "post",
+            success: function (ret) {
+                if (ret.state == 'ok') {
+                    $("#orgid").append("<option value=''>请选择</option>");
+                    for (var i = 0; i < ret.rows.length; i++) {
+                        $("#orgid").append("<option value='" + ret.rows[i].rowguid + "'>" + ret.rows[i].instnm + "</option>")
+                    }
+                }
+            }
+        })
+
+        $('#orgid').change(function () {
+            //selected的值
+            var orgid = $("#orgid ").val();
+            if (orgid != '') {
+                $("#orgName").val($("#orgid option:selected").text());
+                $.ajax({
+                    url: "/incident/getStations",
+                    type: "post",
+                    data: {instgd: orgid},
+                    success: function (ret) {
+                        if (ret.state == 'ok') {
+                            $("#stcd").empty();
+                            $("#stcd").append("<option value=''>请选择</option>");
+                            for (var i = 0; i < ret.rows.length; i++) {
+                                $("#stcd").append("<option value='" + ret.rows[i].rowguid + "'>" + ret.rows[i].stnm + "</option>")
+                            }
+                        }
+                    }
+                })
+            } else {
+                $("#stcd").append("<option value=''>请先选水利站</option>");
+            }
+        });
+        $('#stcd').change(function () {
+            //selected的值
+            var stcd = $("#stcd ").val();
+            if (stcd != '') {
+                $("#stcdName").val($("#stcd option:selected").text());
+            }
+        });
+        $('#assignId').change(function () {
+            $("#assignName").val($("#assignId").find("option:selected").text());
+        });
+        $("#formIncident").ajaxForm({
+            dataType: "json",
+            beforeSubmit: function (formData, jqForm, options) {
+                $("#org_msg,stcd_msg,title_msg,memo_msg").val("");
+            },
+            success: function (ret) {
+                if (ret.state == "ok") {
+                    window.location.href = "/incident/index?time=" + Date.now();
+                }
+                if (ret.state == "fail") {
+
+                }
+                if (ret.org_msg) {
+                    $("#org_msg").text(ret.org_msg);
+                }
+                if (ret.stcd_msg) {
+                    $("#stcd_msg").text(ret.stcd_msg);
+                }
+                if (ret.title_msg) {
+                    $("#title_msg").text(ret.title_msg);
+                }
+                if (ret.endDate_msg) {
+                    $("#endDate_msg").text(ret.endDate_msg);
+                }
+                if (ret.memo_msg) {
+                    $("#memo_msg").text(ret.memo_msg);
+                }
+            }
+            , error: function (ret) {
+
+            }
+            , complete: function (ret) {
+            }
+        });
+        $("#incidentUpload").ajaxForm({
+            dataType: "json",
+            beforeSubmit: function (formData, jqForm, options) {
+                // console.log(formData);
+            },
+            success: function (ret) {
+                if (ret.state == "ok") {
+                    $('#uploadDialog').Dialog('close');
+                    var uploadIdx = $('#uploadIndex').val();
+                    $('#attachmentId' + uploadIdx + '').val(ret.map.attachmentId);
+                    $('#fileName' + uploadIdx + '').val(ret.map.fileName);
+                    layer.msg("附件上传成功!", {
+                            shade: 0.3
+                            , time: 2500
+                            , offset: "165px"
+                            , closeBtn: 1
+                            , shadeClose: true
+                        }, function () {
+
+                        }
+                    );
+                }
+                if (ret.state == "fail") {
+                    layer.msg("附件上传失败, 原因: " + ret.msg, {
+                        shade: 0.3
+                        , time: 2500
+                        , offset: "165px"
+                        , closeBtn: 1
+                        , shadeClose: true
+                    });
+                }
+            }
+            , error: function (ret) {
+
+            }
+            , complete: function (ret) {
+            }
+        });
+        $('#uploadDialog').Dialog({
+            title: '附件上传',
+            autoOpen: false,
+            width: 400,
+            height: 200
+        });
+    });
+    $("select#createPlan").change(function() {
+        var opt = $("#createPlan").val();
+
+        if (opt == "1") {
+            $("#planTypeDiv").show();
+            $("#planDateDiv").show();
+            $("#memoDiv").show();
+            $("#assignIdDiv").show();
+        } else {
+            $("#planTypeDiv").hide();
+            $("#planDateDiv").hide();
+            $("#memoDiv").hide();
+            $("#assignIdDiv").hide();
+        }
+    });
+    //关闭
+    function closeDialog() {
+        $('#uploadDialog').Dialog('close');
+    }
+
+    function upload(index) {
+        $('#uploadIndex').val(index);
+        $('#uploadDialog').Dialog('open');
+    }
+
+    function deleteFile(index) {
+        var attachmentId = $('#attachmentId' + index + '').val();
+        if (attachmentId != '') {
+            $.get("/incident/deleteFile?attachmentId=" + attachmentId + "&time=\" + Date.now()", function (ret, status) {
+                if (status == 'success'){
+                    layer.msg('附件' + index + "删除成功");
+                    $('#fileName' + index + '').val("");
+                } else{
+                    layer.msg('附件' + index + "删除失败");
+                }
+            });
+        } else {
+            layer.msg('还未上传附件' + index);
+        }
+    }
+
+    Date.prototype.format = function (format) {
+        var args = {
+            "M+": this.getMonth() + 1,
+            "d+": this.getDate(),
+            "h+": this.getHours(),
+            "m+": this.getMinutes(),
+            "s+": this.getSeconds(),
+            "q+": Math.floor((this.getMonth() + 3) / 3), //quarter
+
+            "S": this.getMilliseconds()
+        };
+        if (/(y+)/.test(format)) format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var i in args) {
+            var n = args[i];
+            if (new RegExp("(" + i + ")").test(format)) format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? n : ("00" + n).substr(("" + n).length));
+        }
+        return format;
+    };
+</script>
+</html>
